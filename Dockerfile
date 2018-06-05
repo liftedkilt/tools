@@ -1,7 +1,7 @@
 FROM golang:latest AS builder
 
 WORKDIR /tools
-ADD ./* .
+ADD ./* ./
 RUN ./build_all
 
 FROM abiosoft/caddy:latest
