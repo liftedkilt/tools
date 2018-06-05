@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ $# -eq 0 ]; then
+    echo "Usage:"
+    echo "$0 tool"
+fi
+
+cd src/$1
+go build -o ../../bin/$(basename $1) *.go
