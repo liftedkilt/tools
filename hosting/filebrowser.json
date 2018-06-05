@@ -1,0 +1,16 @@
+{
+    "port": 80,
+    "noAuth": true,
+    "baseURL": "/admin",
+    "address": "0.0.0.0",
+    "alternativeReCaptcha": false,
+    "reCaptchaKey": "",
+    "reCaptchaSecret": "",
+    "database": "/database.db",
+    "log": "stdout",
+    "plugin": "",
+    "scope": "/srv",
+    "allowCommands": true,
+    "allowEdit": false,
+    "allowNew": false
+  }
