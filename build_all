@@ -1,6 +1,6 @@
 #!/bin/sh
 
-for dir in src/*/; do
+for dir in ./src/*/; do
     tool=$(basename $dir)
     echo "Building \"$tool\"..."
     ./build $tool
