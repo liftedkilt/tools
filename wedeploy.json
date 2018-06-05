@@ -1,5 +1,4 @@
 {
     "id": "hosting",
-    "customDomains": ["tools.liftedkilt.xyz"],
     "port": 80
 }

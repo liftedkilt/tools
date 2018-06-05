@@ -1,0 +1,7 @@
+0.0.0.0:80
+filemanager / /srv/bin/ {
+    no_auth
+    allow_edit          false
+    allow_new           false
+    allow_publish       true
+}

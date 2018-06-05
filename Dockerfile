@@ -4,8 +4,10 @@ WORKDIR /srv
 COPY . /srv/
 RUN /srv/build_all
 
-FROM hacdias/filebrowser:latest
+FROM abiosoft/caddy:latest
 
 COPY --from=builder /srv/bin /srv/bin
 
-WORKDIR /srv
+COPY Caddyfile /etc/Caddyfile
+
+EXPOSE 80
