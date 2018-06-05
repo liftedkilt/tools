@@ -6,6 +6,6 @@ RUN /tools/build_all
 
 FROM abiosoft/caddy:latest
 
-COPY --from=builder /tools/bin .
+COPY --from=builder /tools/bin /srv/bin
 
-EXPOSE 443
+ENTRYPOINT ["/bin/parent", "caddy", "browse"]
