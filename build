@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ $# -eq 0 ]; then
     echo "Usage:"
@@ -7,3 +7,20 @@ fi
 
 cd src/$1
 go build -o ../../bin/$(basename $1) *.go
+
+platforms=("windows/amd64" "windows/386" "darwin/amd64" "linux/amd64")
+
+for platform in "${platforms[@]}"
+do
+    platform_split=(${platform//\// })
+    GOOS=${platform_split[0]}
+    GOARCH=${platform_split[1]}
+    output_name=$(basename $1)
+    if [ $GOOS = "windows" ]; then
+        output_name+='.exe'
+    fi
+
+    mkdir -p ../bin/$GOOS/$GOARCH
+
+    env GOOS=$GOOS GOARCH=$GOARCH go build -o ../../bin/$GOOS/$GOARCH/$output_name *.go
+done
