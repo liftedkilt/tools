@@ -10,6 +10,7 @@ import (
 	"os"
 	"runtime"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -168,7 +169,7 @@ func doUpdate(url string) error {
 }
 
 func getVersion() string {
-	return "1.0.1"
+	return "1.0.2"
 }
 
 func updateAvailable() (bool, string) {
@@ -181,7 +182,7 @@ func updateAvailable() (bool, string) {
 	latest := string(raw)
 	current := getVersion()
 
-	if latest != current {
+	if strings.Trim(latest, " \r\n") != strings.Trim(current, " \r\n") {
 		return true, latest
 	}
 
