@@ -168,7 +168,7 @@ func doUpdate(url string) error {
 }
 
 func getVersion() string {
-	return "1.0.0"
+	return "1.0.1"
 }
 
 func updateAvailable() (bool, string) {
