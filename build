@@ -22,5 +22,6 @@ do
 
     mkdir -p ../bin/$GOOS/$GOARCH
 
+    echo -e "\tcompiling for $GOOS/$GOARCH"
     env GOOS=$GOOS GOARCH=$GOARCH go build -o ../../bin/$GOOS/$GOARCH/$output_name *.go
 done

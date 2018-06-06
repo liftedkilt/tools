@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for dir in $GOPATH/src/github.com/liftedkilt/tools/src/*/; do
+    tool=$(basename $dir)
+    echo "Installing \"$tool\"..."
+    $GOPATH/src/github.com/liftedkilt/tools/install $tool
+    echo "Done."
+done

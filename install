@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd $GOPATH/src/github.com/liftedkilt/tools/src/$1
+go build -i -o $GOPATH/bin/$(basename $1) *.go
