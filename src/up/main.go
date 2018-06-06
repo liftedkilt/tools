@@ -9,11 +9,17 @@ import (
 	"time"
 )
 
+type host struct {
+	name string
+	port string
+}
+
 func main() {
-	host := os.Args[1]
+
+	list := os.Args[1]
 	port := os.Args[2]
 
-	lines, err := readLines(host)
+	lines, err := readLines(list)
 	checkErr(err)
 
 	results := make(chan string, len(lines))
@@ -21,8 +27,11 @@ func main() {
 	var wg sync.WaitGroup
 
 	// Dispatch Goroutines to check for liveliness
-	for _, value := range lines {
-		go isUpConc(value, port, results, &wg)
+
+	hosts := listToHostStruct(lines, port)
+
+	for _, h := range hosts {
+		go isUpConc(h, results, &wg)
 		wg.Add(1)
 	}
 
@@ -58,8 +67,8 @@ func readLines(path string) ([]string, error) {
 / on that port
 */
 
-func isUp(host, port string) bool {
-	remote := host + ":" + port
+func isUp(h host) bool {
+	remote := h.name + ":" + h.port
 	timeout := time.Duration(500) * time.Millisecond
 
 	var status bool
@@ -89,15 +98,28 @@ func checkErr(err error) {
 / Concurrent function that returns status of isUp via a channel
 */
 
-func isUpConc(host string, port string, results chan string, wg *sync.WaitGroup) {
+func isUpConc(h host, results chan string, wg *sync.WaitGroup) {
 
-	result := isUp(host, port)
+	result := isUp(h)
 	var status string
 	if result {
-		status = host + " up"
+		status = h.name + " up"
 	} else {
-		status = host + " down"
+		status = h.name + " down"
 	}
 	wg.Done()
 	results <- status
+}
+
+func listToHostStruct(list []string, port string) []host {
+	var hosts []host
+
+	for _, item := range list {
+		hosts = append(hosts, host{
+			name: item,
+			port: port,
+		})
+	}
+
+	return hosts
 }
