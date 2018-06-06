@@ -1,2 +1,3 @@
-# tools
-A repo to host some utilities that I find useful
+**Deprecated**
+
+Moved to https://gitlab.com/liftedkilt/tools
