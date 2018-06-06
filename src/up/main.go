@@ -17,7 +17,6 @@ type host struct {
 }
 
 func main() {
-
 	// Parse flags
 	var list string
 	var port int
@@ -26,6 +25,11 @@ func main() {
 	flag.IntVar(&timeout, "timeout", 500, "timeout for check in milliseconds")
 	flag.StringVar(&list, "file", "", "name of input file")
 	flag.Parse()
+
+	if len(os.Args) == 1 {
+		flag.Usage()
+		os.Exit(0)
+	}
 
 	lines, err := readLines(list)
 	checkErr(err)
@@ -37,10 +41,9 @@ func main() {
 
 	// Dispatch Goroutines to check for liveliness
 	for _, h := range hosts {
-		go isUpConc(h, results, timeout, &wg)
+		go isUpConcurrent(h, results, timeout, &wg)
 		wg.Add(1)
 	}
-
 	// Wait for all goroutines to return
 	wg.Wait()
 	// Close channel
@@ -76,7 +79,6 @@ func readLines(path string) ([]string, error) {
 func isUp(h host, t int) bool {
 	remote := h.name + ":" + strconv.Itoa(h.port)
 	timeout := time.Duration(t) * time.Millisecond
-
 	var status bool
 
 	conn, err := net.DialTimeout("tcp", remote, timeout)
@@ -86,7 +88,6 @@ func isUp(h host, t int) bool {
 		status = true
 		defer conn.Close()
 	}
-
 	return status
 }
 
@@ -104,8 +105,7 @@ func checkErr(err error) {
 / Concurrent function that returns status of isUp via a channel
 */
 
-func isUpConc(h host, results chan string, t int, wg *sync.WaitGroup) {
-
+func isUpConcurrent(h host, results chan string, t int, wg *sync.WaitGroup) {
 	result := isUp(h, t)
 	var status string
 	if result {
@@ -126,6 +126,5 @@ func listToHostStruct(list []string, port int) []host {
 			port: port,
 		})
 	}
-
 	return hosts
 }
