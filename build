@@ -7,6 +7,7 @@ fi
 
 cd src/$1
 
+export GOPATH=/srv/
 dep ensure -vendor-only
 
 platforms=("windows/amd64" "windows/386" "darwin/amd64" "linux/amd64")
