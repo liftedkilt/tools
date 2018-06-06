@@ -5,6 +5,7 @@ COPY . /srv/
 
 RUN curl -fsSL -o /usr/local/bin/dep https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 && chmod +x /usr/local/bin/dep
 
+RUN ln -s /srv/src /go/src
 RUN /srv/build_all
 
 FROM abiosoft/caddy:latest
