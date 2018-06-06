@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
@@ -44,6 +45,17 @@ func main() {
 		// If no error
 		fmt.Println("Update was successful")
 		os.Exit(0)
+	} else if os.Args[1] == "version" {
+		available, latest := updateAvailable()
+		local := getVersion()
+
+		if available {
+			fmt.Println("Local:", local, " Latest:", latest)
+		} else {
+			fmt.Println("No update available. Current version is:", local)
+		}
+		os.Exit(0)
+
 	}
 
 	lines, err := readLines(list)
@@ -153,4 +165,26 @@ func doUpdate(url string) error {
 	checkErr(err)
 
 	return err
+}
+
+func getVersion() string {
+	return "1.0.0"
+}
+
+func updateAvailable() (bool, string) {
+	resp, err := http.Get("https://raw.githubusercontent.com/liftedkilt/tools/master/src/up/version")
+	checkErr(err)
+	defer resp.Body.Close()
+
+	raw, _ := ioutil.ReadAll(resp.Body)
+
+	latest := string(raw)
+	current := getVersion()
+
+	if latest != current {
+		return true, latest
+	}
+
+	return false, latest
+
 }
