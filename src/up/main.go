@@ -2,36 +2,42 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"net"
 	"os"
+	"strconv"
 	"sync"
 	"time"
 )
 
 type host struct {
 	name string
-	port string
+	port int
 }
 
 func main() {
 
-	list := os.Args[1]
-	port := os.Args[2]
+	// Parse flags
+	var list string
+	var port int
+	var timeout int
+	flag.IntVar(&port, "port", 80, "port to check")
+	flag.IntVar(&timeout, "timeout", 500, "timeout for check in milliseconds")
+	flag.StringVar(&list, "file", "", "name of input file")
+	flag.Parse()
 
 	lines, err := readLines(list)
 	checkErr(err)
 
 	results := make(chan string, len(lines))
+	hosts := listToHostStruct(lines, port)
 
 	var wg sync.WaitGroup
 
 	// Dispatch Goroutines to check for liveliness
-
-	hosts := listToHostStruct(lines, port)
-
 	for _, h := range hosts {
-		go isUpConc(h, results, &wg)
+		go isUpConc(h, results, timeout, &wg)
 		wg.Add(1)
 	}
 
@@ -67,9 +73,9 @@ func readLines(path string) ([]string, error) {
 / on that port
 */
 
-func isUp(h host) bool {
-	remote := h.name + ":" + h.port
-	timeout := time.Duration(500) * time.Millisecond
+func isUp(h host, t int) bool {
+	remote := h.name + ":" + strconv.Itoa(h.port)
+	timeout := time.Duration(t) * time.Millisecond
 
 	var status bool
 
@@ -98,9 +104,9 @@ func checkErr(err error) {
 / Concurrent function that returns status of isUp via a channel
 */
 
-func isUpConc(h host, results chan string, wg *sync.WaitGroup) {
+func isUpConc(h host, results chan string, t int, wg *sync.WaitGroup) {
 
-	result := isUp(h)
+	result := isUp(h, t)
 	var status string
 	if result {
 		status = h.name + " up"
@@ -111,7 +117,7 @@ func isUpConc(h host, results chan string, wg *sync.WaitGroup) {
 	results <- status
 }
 
-func listToHostStruct(list []string, port string) []host {
+func listToHostStruct(list []string, port int) []host {
 	var hosts []host
 
 	for _, item := range list {
