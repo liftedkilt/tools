@@ -5,10 +5,14 @@ import (
 	"flag"
 	"fmt"
 	"net"
+	"net/http"
 	"os"
+	"runtime"
 	"strconv"
 	"sync"
 	"time"
+
+	update "github.com/inconshreveable/go-update"
 )
 
 type host struct {
@@ -28,6 +32,17 @@ func main() {
 
 	if len(os.Args) == 1 {
 		flag.Usage()
+		os.Exit(0)
+	}
+
+	if os.Args[1] == "update" {
+		systemOS := runtime.GOOS
+		arch := runtime.GOARCH
+
+		err := doUpdate("https://tools.liftedkilt.xyz/api/download/" + systemOS + "/" + arch + "/up")
+		checkErr(err)
+		// If no error
+		fmt.Println("Update was successful")
 		os.Exit(0)
 	}
 
@@ -127,4 +142,15 @@ func listToHostStruct(list []string, port int) []host {
 		})
 	}
 	return hosts
+}
+
+func doUpdate(url string) error {
+	resp, err := http.Get(url)
+	checkErr(err)
+	defer resp.Body.Close()
+
+	err = update.Apply(resp.Body, update.Options{})
+	checkErr(err)
+
+	return err
 }
